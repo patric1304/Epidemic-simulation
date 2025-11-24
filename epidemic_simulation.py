@@ -6,7 +6,7 @@ An agent-based simulation modeling the spread of an infectious disease using the
 import pygame
 import random
 import math
-import matplotlib.pyplot as plt
+
 from collections import deque
 from enum import Enum
 
@@ -349,6 +349,24 @@ class EpidemicSimulation:
             susceptible_agents = [a for a in self.agents if a.state == AgentState.SUSCEPTIBLE]
             for agent in random.sample(susceptible_agents, min(num_to_vaccinate, len(susceptible_agents))):
                 agent.vaccinate()
+
+    def load_scenario(self, scenario_id):
+        """Load a specific simulation scenario"""
+        self.reset_simulation()
+        
+        if scenario_id == 1:  # Extinction Scenario
+            self.infection_prob_multiplier = 2.0
+            self.recovery_prob_multiplier = 0.5
+            self.vaccination_rate_multiplier = 0.0
+            self.enable_quarantine = False
+            print("Loaded Scenario 1: High Infection, Low Recovery (Extinction Risk)")
+            
+        elif scenario_id == 2:  # Survival Scenario
+            self.infection_prob_multiplier = 0.8
+            self.recovery_prob_multiplier = 1.5
+            self.vaccination_rate_multiplier = 1.5
+            self.enable_quarantine = True
+            print("Loaded Scenario 2: Managed Outbreak (Survival)")
     
     def handle_events(self):
         """Handle user input"""
@@ -370,6 +388,14 @@ class EpidemicSimulation:
                     self.recovery_prob_multiplier = min(2.0, self.recovery_prob_multiplier + 0.1)
                 elif event.key == pygame.K_LEFT:
                     self.recovery_prob_multiplier = max(0.1, self.recovery_prob_multiplier - 0.1)
+                elif event.key == pygame.K_w:
+                    self.vaccination_rate_multiplier = min(2.0, self.vaccination_rate_multiplier + 0.1)
+                elif event.key == pygame.K_s:
+                    self.vaccination_rate_multiplier = max(0.0, self.vaccination_rate_multiplier - 0.1)
+                elif event.key == pygame.K_1:
+                    self.load_scenario(1)
+                elif event.key == pygame.K_2:
+                    self.load_scenario(2)
                 elif event.key == pygame.K_v:
                     # Vaccinate remaining susceptible agents
                     susceptible = [a for a in self.agents if a.state == AgentState.SUSCEPTIBLE]
@@ -454,6 +480,7 @@ class EpidemicSimulation:
             "",
             f"Infection Rate: x{self.infection_prob_multiplier:.1f}",
             f"Recovery Rate: x{self.recovery_prob_multiplier:.1f}",
+            f"Vaccination Rate: x{self.vaccination_rate_multiplier:.1f}",
             f"Quarantine: {'ON' if self.enable_quarantine else 'OFF'}",
         ]
         
@@ -472,7 +499,10 @@ class EpidemicSimulation:
             "Q: Toggle Quarantine",
             "UP/DOWN: Adjust Infection Rate",
             "LEFT/RIGHT: Adjust Recovery Rate",
-            "V: Vaccinate Population"
+            "W/S: Adjust Vaccination Rate",
+            "V: Vaccinate Population",
+            "1: Extinction Scenario",
+            "2: Survival Scenario"
         ]
         
         x_offset = WIDTH - 280
