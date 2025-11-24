@@ -314,7 +314,7 @@ class EpidemicSimulation:
         self.agents = []
         self.statistics = Statistics()
         self.quarantine_zones = [
-            QuarantineZone(WIDTH - 250, 50, 200, 200)
+            QuarantineZone((WIDTH - 200) // 2, 50, 200, 200)
         ]
         
         # Simulation parameters (adjustable)
@@ -505,8 +505,8 @@ class EpidemicSimulation:
             "2: Survival Scenario"
         ]
         
-        x_offset = WIDTH - 280
-        y_offset = HEIGHT - GRAPH_HEIGHT - 160
+        x_offset = WIDTH - 250
+        y_offset = 50
         
         title = self.font.render("Controls:", True, TEXT_COLOR)
         self.screen.blit(title, (x_offset, y_offset))
